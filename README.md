@@ -12,5 +12,50 @@ BasicFS is a very simple distributed key value store optimized for small files (
 
 ## Architecture
 
-BasicFS is designed to handle small files efficiently. File metadata is managed by an unspecified number of volume servers while the central master manages the volumes themselves. Volume servers are identified by volume id's which are mapped to volume servers in the master server.
+BasicFS is designed to handle small files efficiently.
+
+Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID should be cached in a local database after the initial write and used in subsequent GET requests.
+
+## Usage
+
+By default, volume servers will run on port 9091. When using multiple volume servers, their respective ports should be specified. The master server will default to port 9090 and should be initialized with a comma separate string containing all volume server urls.
+
+### Start Volume Server
+
+```
+PORT=9092 ./volume
+
+```
+
+### Start Master Server
+
+```
+PORT=9090 ./master localhost:9090,localhost:9091
+
+```
+
+### Write File
+
+To write a file, send a HTTP PUT request containing the filedata.
+
+```
+> curl -X PUT -d filedata localhost:9090/fileID
+
+```
+
+### Read File
+
+To read a file, send a HTTP GET request to the `fileID`.
+
+```
+> curl localhost:9090/fileID
+
+```
+
+You can use this URL to read directly from the volume server:
+
+```
+http://localhost:9090/fileID
+
+```
 

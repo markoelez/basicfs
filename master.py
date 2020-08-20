@@ -74,8 +74,9 @@ class Master:
         print("Sending %s to %s" % (dat, vurl))
         return requests.put("http://%s/%s" % (vurl, fileID), data=dat)
 
-
-m = Master("tmp/db", ["localhost:9090"])
+volumes = os.environ["VOLUMES"].split(",")
+print("Configuring master with volumes ", volumes)
+m = Master("tmp/db", volumes)
 
 def master(env, sr):
 
