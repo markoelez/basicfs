@@ -1,5 +1,7 @@
 # BasicFS
 
+[![CircleCI](https://circleci.com/gh/markoelez/basicfs.svg?style=svg&circle-token=0433e74d7d98b4b5f5814f7f2badac548c7d8bbd)](https://app.circleci.com/pipelines/github/markoelez/basicfs)
+
 ## Introduction
 
 BasicFS is a very simple distributed key value store optimized for small files (i.e. photos), inspired by Facebook's [Haystack](https://www.usenix.org/legacy/event/osdi10/tech/full_papers/Beaver.pdf) object store and [SeaweedFS](https://github.com/chrislusf/seaweedfs).
