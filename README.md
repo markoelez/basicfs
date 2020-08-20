@@ -1,11 +1,5 @@
 # BasicFS
 
-Table of Contents
-=================
-
-* [Introduction](#introduction)
-* [Architecture](#architecture)
-
 ## Introduction
 
 BasicFS is a very simple distributed key value store optimized for small files (i.e. photos), inspired by Facebook's [Haystack](https://www.usenix.org/legacy/event/osdi10/tech/full_papers/Beaver.pdf) object store and [SeaweedFS](https://github.com/chrislusf/seaweedfs).
@@ -24,14 +18,12 @@ By default, volume servers will run on port 9091. When using multiple volume ser
 
 ```
 PORT=9092 ./volume
-
 ```
 
 ### Start Master Server
 
 ```
 PORT=9090 ./master localhost:9090,localhost:9091
-
 ```
 
 ### Write File
@@ -39,8 +31,7 @@ PORT=9090 ./master localhost:9090,localhost:9091
 To write a file, send a HTTP PUT request containing the filedata.
 
 ```
-> curl -X PUT -d filedata localhost:9090/fileID
-
+curl -X PUT -d filedata localhost:9090/fileID
 ```
 
 ### Read File
@@ -48,14 +39,16 @@ To write a file, send a HTTP PUT request containing the filedata.
 To read a file, send a HTTP GET request to the `fileID`.
 
 ```
-> curl localhost:9090/fileID
-
+curl localhost:9090/fileID
 ```
 
 You can use this URL to read directly from the volume server:
 
 ```
 http://localhost:9090/fileID
-
 ```
+
+## License
+
+All code is MIT licensed. Libraries follow their respective licenses.
 
