@@ -72,5 +72,5 @@ def master(env, sr):
 
         m.put_remote(key, dat)
     
-        return respond(sr, '200 OK', body=b"Success")
+        return respond(sr, '201 OK', body=b"Success")
 

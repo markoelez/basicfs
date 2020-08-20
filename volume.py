@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os
-from helpers import respond, key2path
+from helpers import respond
 from filecache import FileCache
 
 
@@ -32,7 +32,7 @@ def volume(env, sr):
         ret = v.get(key)
         return respond(sr, '200 OK', body=ret)
 
-    elif env['REQUEST_METHOD'] == 'PUT':
+    if env['REQUEST_METHOD'] == 'PUT':
         flen = int(env.get('CONTENT_LENGTH', '0'))
         if flen <= 0:
             return respond(sr, '411 Length Required')
