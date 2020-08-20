@@ -6,52 +6,19 @@ import random
 import plyvel
 import requests
 import hashlib
-from enum import Enum
 from helpers import respond
+from index import Index
 
-
-class LevelCache:
-
-    def __init__(self, basedir):
-        self.db = plyvel.DB(basedir, create_if_missing=True)
-
-    def get(self, key):
-        k = self._str2bytes(key)
-        try:
-            v = self.db.get(k)
-            return self._bytes2str(v)
-        except:
-            return None
-    
-    def put(self, key, value):
-        k, v = self._str2bytes(key), self._str2bytes(value)
-        return self.db.put(k, v)
-
-    def delete(self, key):
-        k = self._str2bytes(key)
-        v = self.get(key)
-        self.db.delete(k)
-        # return most recent value
-        return v
-
-    def close(self):
-        self.db.close()
-        return self.db.closed
-
-    def _str2bytes(self, s):
-        return s.encode('utf_8')
-
-    def _bytes2str(self, b):
-        return b.decode('utf_8')
 
 class Master:
 
     def __init__(self, db_dir, volumes):
-        # db maps fileIDs --> volume server URLs
-        self.db = LevelCache(db_dir)
+        # index maps fileIDs --> volume server URLs
+        self.db = Index(db_dir)
+        print("Index in %s" % self.db.path)
         
-        # assign arithmetic id to each volume
         self.volumes = volumes
+        print("Configuring master with volumes: ", self.volumes)
 
     def get_volume(self):
         # TODO: intelligently select volume
@@ -62,9 +29,15 @@ class Master:
 
     def get_remote(self, fileID):
         # get volume url
-        url = "http://%s/%s" % (self.get_fvolume(fileID), fileID)
-        print("Requesting %s from %s" % (fileID, url))
-        return requests.get(url).text.encode('utf-8')
+        vurl = self.get_fvolume(fileID)
+        if not vurl: return None
+        try:
+            url = "http://%s/%s" % (vurl, fileID)
+            print("Requesting %s from %s" % (fileID, url))
+            return requests.get(url).text.encode('utf-8')
+        except requests.exceptions.ConnectionError:
+            print("Error connecting to volume server at %s" % url)
+            return None
 
     def put_remote(self, fileID, dat):
         # cache destination volume
@@ -75,8 +48,7 @@ class Master:
         return requests.put("http://%s/%s" % (vurl, fileID), data=dat)
 
 volumes = os.environ["VOLUMES"].split(",")
-print("Configuring master with volumes ", volumes)
-m = Master("tmp/db", volumes)
+m = Master(os.getenv("DB", "/tmp/db"), volumes)
 
 def master(env, sr):
 
@@ -84,7 +56,9 @@ def master(env, sr):
 
     if env['REQUEST_METHOD'] == 'GET':
         ret = m.get_remote(key)
-        print(ret)
+        if not ret:
+            return respond(sr, '404 The requested resource was not found.', body=b'Key does not exist.')
+        print("Received %s. Sending response." % ret)
         return respond(sr, '200 OK', body=ret)
 
     elif env['REQUEST_METHOD'] == 'PUT':

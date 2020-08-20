@@ -1,6 +1,9 @@
 #!/bin/bash
 
-export VOLUME="tmp/v1"
+export VOLUME=${VOLUME:-/tmp/v${ID}}
+
+# should be nonzero when using multiple volumes
+export ID=${ID:-0} 
 
 uwsgi --http :${PORT:-9091} --wsgi-file volume.py --callable volume --master --processes 4
 

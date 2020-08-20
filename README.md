@@ -17,13 +17,13 @@ By default, volume servers will run on port 9091. When using multiple volume ser
 ### Start Volume Server
 
 ```
-PORT=9092 ./volume
+PORT=9092 VOLUME=/tmp/v1 ./volume
 ```
 
 ### Start Master Server
 
 ```
-PORT=9090 ./master localhost:9090,localhost:9091
+PORT=9090 DB=/tmp/db ./master localhost:9090,localhost:9091
 ```
 
 ### Write File
