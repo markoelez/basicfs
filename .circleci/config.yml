@@ -5,10 +5,7 @@ jobs:
         machine: true
         steps:
             - checkout
-
             # build and run docker image
             - run: |
                 ./docker.sh
-            - run: |
-                ./test.py
 
