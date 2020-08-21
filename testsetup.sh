@@ -9,5 +9,5 @@ PORT=9092 VOLUME=/tmp/v2 ./volume &
 
 # start master
 
-PORT=9090 DB=/tmp/db ./master localhost:9091,localhost:9092
+PORT=9090 DB=/tmp/db ./master localhost:9091&localhost:9092
 

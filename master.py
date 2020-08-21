@@ -74,7 +74,7 @@ class Master:
             print(f"Error deleting key {fileID.decode('utf-8')} from server {remote}")
             return None
 
-volumes = os.environ["VOLUMES"].split(",")
+volumes = os.environ["VOLUMES"].split("&")
 m = Master(os.getenv("DB", "/tmp/db"), volumes)
 
 def master(env, sr):
