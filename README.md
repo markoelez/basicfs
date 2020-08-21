@@ -10,6 +10,19 @@ BasicFS is a very simple distributed key value store optimized for small files (
 
 By default, volume servers will run on port 9091. When using multiple volume servers, their respective ports should be specified. The master server will default to port 9090 and should be initialized with a comma separate string containing all volume server urls.
 
+### Build and run docker image
+
+```
+./docker.sh
+```
+Dependencies are tracked/installed using [Pipenv](https://pipenv.pypa.io/en/stable/) and [Pipfile](https://github.com/pypa/pipfile).
+
+Dependencies can be installed manually using:
+
+```
+pipenv lock --requirements > requirements.txt && pip install -r /tmp/requirements.txt
+```
+
 ### Start Volume Server
 
 ```
