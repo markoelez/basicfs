@@ -58,10 +58,21 @@ class Master:
             requests.put(remote, data=dat).status_code
             # index locally
             self.db.put(fileID, volume.encode('utf-8'))
-            return True
+            return fileID 
         except requests.exceptions.ConnectionError:
             print(f"Error connecting to volume server at {remote}")
             return False
+
+    def delete_remote(self, fileID):
+        try:
+            # get volume url
+            volume = self.get_remote_url(fileID)
+            remote = f'http://{volume}{self.id2path(fileID)}'
+            requests.delete(remote).text.encode('utf-8')
+            return True
+        except requests.exceptions.ConnectionError:
+            print(f"Error deleting key {fileID.decode('utf-8')} from server {remote}")
+            return None
 
 volumes = os.environ["VOLUMES"].split(",")
 m = Master(os.getenv("DB", "/tmp/db"), volumes)
@@ -79,6 +90,13 @@ def master(env, sr):
         print(f"Received {ret}. Sending response.")
         return respond(sr, '200 OK', body=ret)
 
+    if env['REQUEST_METHOD'] == 'DELETE':
+        ret = m.delete_remote(key)
+        if not ret:
+            return respond(sr, '404 The requested resource was not found.', body=b'Key does not exist.')
+        print(f"Received {ret}. Sending response.")
+        return respond(sr, '204')
+
     if env['REQUEST_METHOD'] == 'PUT':
         flen = int(env.get('CONTENT_LENGTH', '0'))
         if flen <= 0:
@@ -92,5 +110,5 @@ def master(env, sr):
         if not ret:
             return respond(sr, '404 The requested resource was not found.', body=b'Key does not exist.')
     
-        return respond(sr, '201 OK', body=b"Success")
+        return respond(sr, '201 OK', body=ret)
 

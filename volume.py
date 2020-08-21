@@ -17,6 +17,9 @@ class Volume:
     def put(self, key, dat):
         return self.fc.put(key, dat)
 
+    def delete(self, key):
+        return self.fc.delete(key)
+
 
 vid = os.environ['ID']
 basedir = os.environ['VOLUME']
@@ -30,6 +33,10 @@ def volume(env, sr):
 
     if env['REQUEST_METHOD'] == 'GET':
         ret = v.get(key)
+        return respond(sr, '200 OK', body=ret)
+
+    if env['REQUEST_METHOD'] == 'DELETE':
+        ret = v.delete(key)
         return respond(sr, '200 OK', body=ret)
 
     if env['REQUEST_METHOD'] == 'PUT':

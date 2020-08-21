@@ -33,11 +33,17 @@ class FileCache:
         p = self._k2p(key)
         os.makedirs(os.path.dirname(p), exist_ok=True)
 
-        #assert os.path.isdir(p)
-
         with open(p, 'wb+') as f:
             f.write(dat)
             f.close()
             return True
         return False
+
+    def delete(self, key):
+        try:
+            p = self._k2p(key)
+            os.remove(p)
+            return True
+        except:
+            return False
 
