@@ -6,12 +6,6 @@
 
 BasicFS is a very simple distributed key value store optimized for small files (i.e. photos), inspired by Facebook's [Haystack](https://www.usenix.org/legacy/event/osdi10/tech/full_papers/Beaver.pdf) object store and [SeaweedFS](https://github.com/chrislusf/seaweedfs).
 
-## Architecture
-
-BasicFS is designed to handle small files efficiently.
-
-Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID should be cached in a local database after the initial write and used in subsequent GET requests.
-
 ## Usage
 
 By default, volume servers will run on port 9091. When using multiple volume servers, their respective ports should be specified. The master server will default to port 9090 and should be initialized with a comma separate string containing all volume server urls.
@@ -49,6 +43,29 @@ You can use this URL to read directly from the volume server:
 ```
 http://localhost:9090/fileID
 ```
+
+### Delete File
+
+To delete a file, send a HTTP DELETE request to the `fileID`.
+
+```
+curl -X DELETE localhost:9090/fileID
+```
+
+## Architecture
+
+BasicFS is designed to handle small files efficiently.
+
+Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID should be cached in a local database after the initial write and used in subsequent GET requests.
+
+## In Development
+
+Currently working on adding/refactoring several features:
+
+- RAFT consensus protocol in order to achieve fault tolerace
+- User specified replication protocols
+- RPC communication for master --> volume relationship (using gRPC, protocol buffers)
+- Allow for incorporation of additional volumes to master index (using rebuild, RPC heartbeat)
 
 ## License
 
