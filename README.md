@@ -8,7 +8,7 @@ BasicFS is a very simple distributed key value store optimized for small files (
 
 ## Usage
 
-By default, volume servers will run on port 9091. When using multiple volume servers, their respective ports should be specified. The master server will default to port 9090 and should be initialized with a "&" separated string containing all volume server urls.
+By default, volume servers will run on port 9091. When using multiple volume servers, their respective ports should be specified. The master server will default to port 9090 and should be initialized with a comma separated string containing all volume server urls.
 
 ### Build and run docker image
 
@@ -34,7 +34,7 @@ PORT=9092 VOLUME=/tmp/v1 ./volume
 Must have more volumes than replicas. 
 
 ```
-PORT=9090 DB=/tmp/db REPLICAS=2 ./master localhost:9090&localhost:9091
+PORT=9090 DB=/tmp/db REPLICAS=2 ./master localhost:9090,localhost:9091
 ```
 
 ### Write File
