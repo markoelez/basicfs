@@ -30,11 +30,10 @@ class TestBasicFS(unittest.TestCase):
         r = requests.put(url, data=b"testvalue")
         self.assertEqual(r.status_code, 201)
         self.assertEqual(r.text, key.decode('utf-8'))
-
+        
         r = requests.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.text, "testvalue")
-
 
     def test_putdeleteget(self):
         key = self.get_key()
@@ -44,13 +43,16 @@ class TestBasicFS(unittest.TestCase):
         self.assertEqual(r.status_code, 201)
         self.assertEqual(r.text, key.decode('utf-8'))
 
+        r = requests.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.text, "testvalue")
+
         r = requests.delete(url)
         self.assertEqual(r.status_code, 204)
         self.assertEqual(r.text, '')
 
         r = requests.get(url)
         self.assertEqual(r.status_code, 404)
-
 
 if __name__ == '__main__':
 

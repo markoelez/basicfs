@@ -1,4 +1,3 @@
-
 def respond(start_response, code, headers=[('Content-type', 'text/plain')], body=b''):
     start_response(code, headers)
     return [body]

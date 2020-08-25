@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
-
 import os
 import plyvel
-
 
 class LevelDB:
 
@@ -20,9 +18,8 @@ class LevelDB:
         return self.db.put(key, value)
 
     def delete(self, key):
-        k = self._str2bytes(key)
         v = self.get(key)
-        self.db.delete(k)
+        self.db.delete(key)
         return v
 
     def printall(self):

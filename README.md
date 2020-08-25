@@ -31,8 +31,10 @@ PORT=9092 VOLUME=/tmp/v1 ./volume
 
 ### Start Master Server
 
+Must have more volumes than replicas. 
+
 ```
-PORT=9090 DB=/tmp/db ./master localhost:9090&localhost:9091
+PORT=9090 DB=/tmp/db REPLICAS=2 ./master localhost:9090&localhost:9091
 ```
 
 ### Write File
@@ -69,14 +71,13 @@ curl -X DELETE localhost:9090/fileID
 
 BasicFS is designed to handle small files efficiently.
 
-Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID should be cached in a local database after the initial write and used in subsequent GET requests.
+Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID should be cached in a local database after the initial write and used in subsequent GET requests. Uploaded key/value pairs will be replicated accross the specified volume servers based on the user specified replication protocol.
 
 ## In Development
 
 Currently working on adding/refactoring several features:
 
 - RAFT consensus protocol in order to achieve fault tolerance
-- User specified replication protocols
 - RPC communication for master --> volume relationship (using gRPC, protocol buffers)
 - Allow for incorporation of additional volumes to master index (using rebuild, RPC heartbeat)
 

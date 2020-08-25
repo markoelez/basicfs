@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
-
 import os
-
 
 class FileCache:
     """Represents a volume's local filesystem"""
