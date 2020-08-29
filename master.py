@@ -22,9 +22,14 @@ class Master:
         print(f"Configuring master with volumes: {self.volumes} and {self.replicas} replicas")
 
     def id2path(self, fileID):
-        md5 = hashlib.md5(fileID).hexdigest()
+        md5 = self.compute_hash(fileID)
         key64 = base64.b64encode(fileID).decode('utf-8')
         return f'/{md5[:2]}/{key64}'
+
+    def compute_hash(self, s):
+        if type(s) == str:
+            s = s.encode('utf-8')
+        return hashlib.md5(s).hexdigest()
         
     def get_volumes(self):
         # TODO: intelligently select volumes
@@ -55,13 +60,17 @@ class Master:
     def put_remote(self, fileID, dat):
         try:
             volumes = self.get_volumes()
-            file_hash = self.id2path(fileID)
+            path = self.id2path(fileID)
+            buf = []
             for volume in volumes:
-                remote = f'http://{volume}{file_hash}'
+                remote = f'http://{volume}{path}'
+                buf.append(remote)
                 print(f'Sending {dat.decode("utf-8")} to {remote}')
                 requests.put(remote, data=dat).status_code
-            # index locally
+            # get hash
+            file_hash = self.compute_hash(''.join(buf))
             rec = Record(rhash=file_hash, volumes=volumes)
+            # index locally
             self.db.put(fileID, rec.to_bytes())
             r = Record.from_bytes(self.db.get(fileID))
             return fileID 

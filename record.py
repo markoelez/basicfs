@@ -13,8 +13,8 @@ class Record:
         try:
             s = data.decode('utf-8')
             if s.startswith("HASH"):
-                r.hash = s[4:48] 
-                s = s[48:]
+                r.hash = s[4:36] 
+                s = s[36:]
             r.volumes = s.split(',')
             return r 
         except:
@@ -35,9 +35,6 @@ if __name__ == "__main__":
 
     r = Record.from_bytes(b)
 
-    print(r)
-
-    t = r.to_bytes()
-
-    print(t)
+    print(r.hash)
+    print(r.volumes)
 

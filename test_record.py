@@ -16,20 +16,18 @@ class TestRecord(unittest.TestCase):
     def get_key(self):
         return b"testkey-" + binascii.hexlify(os.urandom(10))
 
-    def get_hash(self, fileID):
-        md5 = hashlib.md5(fileID).hexdigest()
-        key64 = base64.b64encode(fileID).decode('utf-8')
-        return f'/{md5[:2]}/{key64}'
+    def get_hash(self, s):
+        return hashlib.md5(s).hexdigest()
 
     def test_constructors(self):
         key = self.get_key()
 
         volumes = ['localhost:9091', 'localhost:9092']
-        _hash = self.get_hash(key)
+        rhash = self.get_hash(key)
 
-        rec = Record(volumes, _hash)
+        rec = Record(volumes, rhash)
 
-        self.assertEqual(_hash, rec.hash)
+        self.assertEqual(rhash, rec.hash)
         self.assertEqual(volumes, rec.volumes)
         self.assertEqual(rec, Record.from_bytes(rec.to_bytes()))
         self.assertEqual(rec.to_bytes(), Record.from_bytes(rec.to_bytes()).to_bytes())
