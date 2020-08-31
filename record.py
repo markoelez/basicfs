@@ -31,9 +31,9 @@ class Record:
 
 if __name__ == "__main__":
 
-    b = "HASH098f6bcd4621d373cade4e832627b4f6localhost:3000,localhost:3001".encode('utf-8')
-
+    b = b"HASH098f6bcd4621d373cade4e832627b4f6localhost:3000,localhost:3001"
     r = Record.from_bytes(b)
+    assert(b.decode('utf-8') == str(r))
 
     print(r.hash)
     print(r.volumes)
