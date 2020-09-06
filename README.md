@@ -77,7 +77,8 @@ Currently fileID's are mapped to volume servers with the master. Eventually, thi
 
 Currently working on adding/refactoring several features:
 
-- RAFT consensus protocol in order to achieve fault tolerance
+- Consistent hashing scheme (rather than choosing volume randomly)
+- RAFT consensus protocol
 - RPC communication for master --> volume relationship (using gRPC, protocol buffers)
 - Allow for incorporation of additional volumes to master index (using rebuild, RPC heartbeat)
 
