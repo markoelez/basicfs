@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 import os
-import sys
 import random
-import plyvel
 import requests
 import hashlib
 import base64
-from helpers import respond
-from leveldb import LevelDB
-from record import Record
+from basicfs.helpers import respond
+from basicfs.leveldb import LevelDB
+from basicfs.record import Record
+
 
 class Master:
 
@@ -16,7 +15,7 @@ class Master:
         # index maps fileIDs --> volume server URLs
         self.db = LevelDB(db_dir)
         print(f"Index in {self.db.path}")
-        
+
         self.volumes = volumes
         self.replicas = replicas
         print(f"Configuring master with volumes: {self.volumes} and {self.replicas} replicas")
@@ -30,7 +29,7 @@ class Master:
         if type(s) == str:
             s = s.encode('utf-8')
         return hashlib.md5(s).hexdigest()
-        
+
     def get_volumes(self):
         # TODO: intelligently select volumes
         volumes = set()
@@ -52,8 +51,8 @@ class Master:
             # pick one of the volumes
             volume = random.choice(record.volumes)
             remote = f'http://{volume}{self.id2path(fileID)}'
-            return requests.get(remote).text.encode('utf-8')
-        except (requests.exceptions.ConnectionError, AttributeError) as error :
+            return requests.get(remote, timeout=10).text.encode('utf-8')
+        except (requests.exceptions.ConnectionError, AttributeError) as error:
             print(f"Error retrieving key {fileID.decode('utf-8')} from server. {error}")
             return None
 
@@ -66,14 +65,14 @@ class Master:
                 remote = f'http://{volume}{path}'
                 buf.append(remote)
                 print(f'Sending {dat.decode("utf-8")} to {remote}')
-                requests.put(remote, data=dat).status_code
+                requests.put(remote, data=dat, timeout=10).status_code
             # get hash
             file_hash = self.compute_hash(''.join(buf))
             rec = Record(rhash=file_hash, volumes=volumes)
             # index locally
             self.db.put(fileID, rec.to_bytes())
-            r = Record.from_bytes(self.db.get(fileID))
-            return fileID 
+            # r = Record.from_bytes(self.db.get(fileID))
+            return fileID
         except requests.exceptions.ConnectionError:
             print(f"Error connecting to volume server at {remote}")
             return False
@@ -86,7 +85,7 @@ class Master:
             # delete from all volumes
             for volume in record.volumes:
                 remote = f'http://{volume}{file_hash}'
-                requests.delete(remote).text.encode('utf-8')
+                requests.delete(remote, timeout=10).text.encode('utf-8')
             # delete local index
             self.db.delete(fileID)
             return True
@@ -94,16 +93,17 @@ class Master:
             print(f"Error deleting key {fileID.decode('utf-8')} from server {remote}")
             return None
 
+
 volumes = os.environ["VOLUMES"].split(",")
-replicas = int(os.getenv("REPLICAS", 2))
+replicas = int(os.getenv("REPLICAS", '2'))
 assert len(volumes) >= replicas, "Must have more volumes than replicas"
 m = Master(os.getenv("DB", "/tmp/db"), volumes, replicas)
 
+
 def master(env, sr):
-    
+
     # just work with bytes
     key = env['PATH_INFO'][1:].encode('utf-8')
-
 
     if env['REQUEST_METHOD'] == 'GET':
         ret = m.get_remote(key)
@@ -131,6 +131,5 @@ def master(env, sr):
         ret = m.put_remote(key, dat)
         if not ret:
             return respond(sr, '404 The requested resource was not found.', body=b'Key does not exist.')
-    
-        return respond(sr, '201 OK', body=ret)
 
+        return respond(sr, '201 OK', body=ret)

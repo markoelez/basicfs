@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import sys
 import os
-from helpers import respond
-from filecache import FileCache
+from basicfs.helpers import respond
+from basicfs.filecache import FileCache
+
 
 class Volume:
 
@@ -24,6 +24,7 @@ vid = os.environ['ID']
 basedir = os.environ['VOLUME']
 
 v = Volume(vid, basedir)
+
 
 def volume(env, sr):
     """A volume stores file metadata in local filesystem"""
@@ -48,6 +49,5 @@ def volume(env, sr):
             return respond(sr, '500 Internal Server Error (length mismatch)')
 
         v.put(key, dat)
-    
-        return respond(sr, '200 OK', body=b"Success")
 
+        return respond(sr, '200 OK', body=b"Success")

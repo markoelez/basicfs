@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 
 class Record:
-    
+
     def __init__(self, volumes=None, rhash=None):
         # volume server URLs
         self.volumes = volumes
         # md5 hash = length of 32
         self.hash = rhash
 
-    def from_bytes(data):
+    @classmethod
+    def from_bytes(cls, data):
         r = Record(None, None)
         try:
             s = data.decode('utf-8')
             if s.startswith("HASH"):
-                r.hash = s[4:36] 
+                r.hash = s[4:36]
                 s = s[36:]
             r.volumes = s.split(',')
-            return r 
-        except:
+            return r
+        except Exception:
             return None
 
     def to_bytes(self):
@@ -29,12 +30,12 @@ class Record:
     def __str__(self):
         return f'HASH{self.hash}{",".join(self.volumes)}'
 
+
 if __name__ == "__main__":
 
     b = b"HASH098f6bcd4621d373cade4e832627b4f6localhost:3000,localhost:3001"
     r = Record.from_bytes(b)
-    assert(b.decode('utf-8') == str(r))
+    assert (b.decode('utf-8') == str(r))
 
     print(r.hash)
     print(r.volumes)
-

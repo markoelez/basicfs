@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export VOLUME=${VOLUME:-/tmp/v${ID}}
+export ID=${ID:-0} 
+
+uwsgi --http :${PORT:-9091} --wsgi-file basicfs/volume.py --callable volume --master --processes 4
+

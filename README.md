@@ -23,10 +23,11 @@ Dependencies can be installed manually using:
 pipenv lock --requirements > requirements.txt && pip install -r /tmp/requirements.txt
 ```
 
-### Start Volume Server
+### Start Two Volume Servers
 
 ```
-PORT=9092 VOLUME=/tmp/v1 ./volume
+PORT=9090 VOLUME=/tmp/v1 ./scripts/volume
+PORT=9091 VOLUME=/tmp/v1 ./scripts/volume
 ```
 
 ### Start Master Server
@@ -34,7 +35,7 @@ PORT=9092 VOLUME=/tmp/v1 ./volume
 Must have more volumes than replicas. 
 
 ```
-PORT=9090 DB=/tmp/db REPLICAS=2 ./master localhost:9090,localhost:9091
+PORT=9092 DB=/tmp/db REPLICAS=2 ./scripts/master localhost:9090,localhost:9091
 ```
 
 ### Write File
@@ -71,7 +72,7 @@ curl -X DELETE localhost:9090/fileID
 
 BasicFS is designed to handle small files efficiently.
 
-Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID should be cached in a local database after the initial write and used in subsequent GET requests. Uploaded key/value pairs will be replicated accross the specified volume servers based on the user specified replication protocol.
+Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID mapping should be cached in a local database after the initial write and used in subsequent GET requests. Uploaded key/value pairs will be replicated accross the specified volume servers based on the user specified replication protocol.
 
 ## In Development
 

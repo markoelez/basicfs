@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 
+
 class FileCache:
     """Represents a volume's local filesystem"""
 
@@ -33,15 +34,13 @@ class FileCache:
 
         with open(p, 'wb+') as f:
             f.write(dat)
-            f.close()
-            return True
-        return False
+
+        return True
 
     def delete(self, key):
         try:
             p = self._k2p(key)
             os.remove(p)
             return True
-        except:
+        except Exception:
             return False
-

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import os
 import plyvel
+
 
 class LevelDB:
 
@@ -11,9 +11,9 @@ class LevelDB:
     def get(self, key):
         try:
             return self.db.get(key)
-        except:
+        except Exception:
             return None
-    
+
     def put(self, key, value):
         return self.db.put(key, value)
 
@@ -30,4 +30,3 @@ class LevelDB:
     def close(self):
         self.db.close()
         return self.db.closed
-
