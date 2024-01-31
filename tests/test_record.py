@@ -10,11 +10,11 @@ logging.basicConfig(level=logging.DEBUG, format='%(name)s %(levelname)s %(messag
 logger.level = logging.DEBUG
 
 
-def get_key():
+def get_key() -> bytes:
     return b"testkey-" + binascii.hexlify(os.urandom(10))
 
 
-def get_hash(s):
+def get_hash(s: str) -> bytes:
     return hashlib.md5(s).hexdigest()
 
 
@@ -22,11 +22,11 @@ def test_basic():
     key = get_key()
 
     volumes = ['localhost:9091', 'localhost:9092']
-    rhash = get_hash(key)
+    cs = get_hash(key)
 
-    rec = Record(volumes, rhash)
+    rec = Record(volumes, cs)
 
-    assert rhash == rec.hash
+    assert cs == rec.cs
     assert volumes == rec.volumes
     assert rec == Record.from_bytes(rec.to_bytes())
     assert rec.to_bytes() == Record.from_bytes(rec.to_bytes()).to_bytes()

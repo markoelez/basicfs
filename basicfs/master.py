@@ -4,14 +4,13 @@ import random
 import requests
 import hashlib
 import base64
-from basicfs.helpers import respond
+from basicfs.util import respond
 from basicfs.leveldb import LevelDB
 from basicfs.record import Record
 
 
 class Master:
-
-    def __init__(self, db_dir, volumes, replicas):
+    def __init__(self, db_dir: str, volumes: list[str], replicas: int):
         # index maps fileIDs --> volume server URLs
         self.db = LevelDB(db_dir)
         print(f"Index in {self.db.path}")
@@ -68,7 +67,7 @@ class Master:
                 requests.put(remote, data=dat, timeout=10).status_code
             # get hash
             file_hash = self.compute_hash(''.join(buf))
-            rec = Record(rhash=file_hash, volumes=volumes)
+            rec = Record(cs=file_hash, volumes=volumes)
             # index locally
             self.db.put(fileID, rec.to_bytes())
             # r = Record.from_bytes(self.db.get(fileID))

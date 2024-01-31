@@ -3,21 +3,20 @@ import plyvel
 
 
 class LevelDB:
-
-    def __init__(self, basedir):
+    def __init__(self, basedir: str):
         self.path = basedir
         self.db = plyvel.DB(self.path, create_if_missing=True)
 
-    def get(self, key):
+    def get(self, key: str) -> bytes:
         try:
             return self.db.get(key)
         except Exception:
             return None
 
-    def put(self, key, value):
-        return self.db.put(key, value)
+    def put(self, key: str, val: bytes) -> bool:
+        return self.db.put(key, val)
 
-    def delete(self, key):
+    def delete(self, key: str) -> bytes:
         v = self.get(key)
         self.db.delete(key)
         return v
@@ -27,6 +26,6 @@ class LevelDB:
             for k, v in it:
                 print(k, v)
 
-    def close(self):
+    def close(self) -> bool:
         self.db.close()
         return self.db.closed

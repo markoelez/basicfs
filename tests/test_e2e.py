@@ -14,11 +14,11 @@ logger.level = logging.DEBUG
 BASE_URL = b"http://localhost:9092/"
 
 
-def get_key():
+def get_key() -> bytes:
     return b"testkey-" + binascii.hexlify(os.urandom(10))
 
 
-def get_request_url(key):
+def get_request_url(key: str) -> str:
     return BASE_URL + key
 
 

@@ -1,22 +1,21 @@
 #!/usr/bin/env python3
 import os
-from basicfs.helpers import respond
+from basicfs.util import respond
 from basicfs.filecache import FileCache
 
 
 class Volume:
-
-    def __init__(self, vid, basedir):
+    def __init__(self, vid: int, basedir: str):
         self.id = vid
         self.fc = FileCache(basedir)
 
-    def get(self, key):
+    def get(self, key: str) -> bytes:
         return self.fc.get(key)
 
-    def put(self, key, dat):
+    def put(self, key: str, dat: bytes) -> bool:
         return self.fc.put(key, dat)
 
-    def delete(self, key):
+    def delete(self, key: str) -> bool:
         return self.fc.delete(key)
 
 

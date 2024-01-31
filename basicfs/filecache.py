@@ -2,10 +2,9 @@
 import os
 
 
+# Represents a volume's local filesystem
 class FileCache:
-    """Represents a volume's local filesystem"""
-
-    def __init__(self, basedir):
+    def __init__(self, basedir: str):
         self.basedir = os.path.realpath(basedir)
 
         if not os.path.isdir(self.basedir):
@@ -15,19 +14,17 @@ class FileCache:
 
         print(f"FileCache initialized in {basedir}")
 
-    def _k2p(self, key):
+    def _k2p(self, key: str) -> str:
         return os.path.join(self.basedir, key)
 
-    def get(self, key):
+    def get(self, key: str) -> bytes | None:
         try:
             with open(self._k2p(key), "rb") as f:
-                ret = f.read()
-                f.close()
-                return ret
+                return f.read()
         except FileNotFoundError:
             return None
 
-    def put(self, key, dat):
+    def put(self, key: str, dat: bytes) -> bool:
         # create subdirs if not exist
         p = self._k2p(key)
         os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -37,7 +34,7 @@ class FileCache:
 
         return True
 
-    def delete(self, key):
+    def delete(self, key: str) -> bool:
         try:
             p = self._k2p(key)
             os.remove(p)
