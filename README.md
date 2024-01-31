@@ -1,6 +1,7 @@
 # BasicFS
 
-[![CircleCI](https://circleci.com/gh/markoelez/basicfs.svg?style=svg&circle-token=0433e74d7d98b4b5f5814f7f2badac548c7d8bbd)](https://app.circleci.com/pipelines/github/markoelez/basicfs)
+[![CI](https://github.com/markoelez/basicfs/actions/workflows/ci.yaml/badge.svg)](https://github.com/markoelez/basicfs/actions/workflows/ci.yaml)
+
 
 ## Introduction
 
