@@ -75,11 +75,8 @@ BasicFS is designed to handle small files efficiently.
 
 Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID mapping should be cached in a local database after the initial write and used in subsequent GET requests. Uploaded key/value pairs will be replicated accross the specified volume servers based on the user specified replication protocol.
 
-## In Development
-
-Currently working on adding/refactoring several features:
-
-- Consistent hashing scheme (rather than choosing volume randomly)
+## Todo
+- Consistent hashing instead of random volume selection
 - RAFT consensus protocol
 - RPC communication for master --> volume relationship (using gRPC, protocol buffers)
 - Allow for incorporation of additional volumes to master index (using rebuild, RPC heartbeat)
