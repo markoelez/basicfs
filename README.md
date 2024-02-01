@@ -41,10 +41,10 @@ PORT=9092 DB=/tmp/db REPLICAS=2 ./scripts/master localhost:9090,localhost:9091
 
 ### Write File
 
-To write a file, send a HTTP PUT request containing the filedata.
+To write a file, send a HTTP PUT request containing the filedata to the master server.
 
 ```
-curl -X PUT -d filedata localhost:9090/fileID
+curl -X PUT -d filedata localhost:9092/fileID
 ```
 
 ### Read File
@@ -52,10 +52,10 @@ curl -X PUT -d filedata localhost:9090/fileID
 To read a file, send a HTTP GET request to the `fileID`.
 
 ```
-curl localhost:9090/fileID
+curl localhost:9092/fileID
 ```
 
-You can use this URL to read directly from the volume server:
+You can use also use this URL to read directly from the volume server:
 
 ```
 http://localhost:9090/fileID
@@ -66,7 +66,7 @@ http://localhost:9090/fileID
 To delete a file, send a HTTP DELETE request to the `fileID`.
 
 ```
-curl -X DELETE localhost:9090/fileID
+curl -X DELETE localhost:9092/fileID
 ```
 
 ## Architecture
