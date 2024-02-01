@@ -11,7 +11,7 @@ from basicfs.record import Record
 
 class Master:
     def __init__(self, db_dir: str, volumes: list[str], replicas: int):
-        # index maps fileIDs --> volume server URLs
+        # index maps file_ids --> volume server URLs
         self.db = LevelDB(db_dir)
         print(f"Index in {self.db.path}")
 
@@ -19,9 +19,9 @@ class Master:
         self.replicas = replicas
         print(f"Configuring master with volumes: {self.volumes} and {self.replicas} replicas")
 
-    def id2path(self, fileID):
-        md5 = self.compute_hash(fileID)
-        key64 = base64.b64encode(fileID).decode('utf-8')
+    def id2path(self, file_id):
+        md5 = self.compute_hash(file_id)
+        key64 = base64.b64encode(file_id).decode('utf-8')
         return f'/{md5[:2]}/{key64}'
 
     def compute_hash(self, s):
@@ -36,29 +36,29 @@ class Master:
             volumes.add(random.choice(self.volumes))
         return list(volumes)
 
-    def get_record(self, fileID):
+    def get_record(self, file_id):
         try:
-            return Record.from_bytes(self.db.get(fileID))
+            return Record.from_bytes(self.db.get(file_id))
         except AttributeError:
             # key not found for some reason
             return None
 
-    def get_remote(self, fileID):
+    def get_remote(self, file_id):
         try:
             # get volume url
-            record = self.get_record(fileID)
+            record = self.get_record(file_id)
             # pick one of the volumes
             volume = random.choice(record.volumes)
-            remote = f'http://{volume}{self.id2path(fileID)}'
+            remote = f'http://{volume}{self.id2path(file_id)}'
             return requests.get(remote, timeout=10).text.encode('utf-8')
         except (requests.exceptions.ConnectionError, AttributeError) as error:
-            print(f"Error retrieving key {fileID.decode('utf-8')} from server. {error}")
+            print(f"Error retrieving key {file_id.decode('utf-8')} from server. {error}")
             return None
 
-    def put_remote(self, fileID, dat):
+    def put_remote(self, file_id, dat):
         try:
             volumes = self.get_volumes()
-            path = self.id2path(fileID)
+            path = self.id2path(file_id)
             buf = []
             for volume in volumes:
                 remote = f'http://{volume}{path}'
@@ -69,27 +69,27 @@ class Master:
             file_hash = self.compute_hash(''.join(buf))
             rec = Record(cs=file_hash, volumes=volumes)
             # index locally
-            self.db.put(fileID, rec.to_bytes())
-            # r = Record.from_bytes(self.db.get(fileID))
-            return fileID
+            self.db.put(file_id, rec.to_bytes())
+            # r = Record.from_bytes(self.db.get(file_id))
+            return file_id
         except requests.exceptions.ConnectionError:
             print(f"Error connecting to volume server at {remote}")
             return False
 
-    def delete_remote(self, fileID):
+    def delete_remote(self, file_id):
         try:
             # get volume url
-            record = self.get_record(fileID)
-            file_hash = self.id2path(fileID)
+            record = self.get_record(file_id)
+            file_hash = self.id2path(file_id)
             # delete from all volumes
             for volume in record.volumes:
                 remote = f'http://{volume}{file_hash}'
                 requests.delete(remote, timeout=10).text.encode('utf-8')
             # delete local index
-            self.db.delete(fileID)
+            self.db.delete(file_id)
             return True
         except requests.exceptions.ConnectionError:
-            print(f"Error deleting key {fileID.decode('utf-8')} from server {remote}")
+            print(f"Error deleting key {file_id.decode('utf-8')} from server {remote}")
             return None
 
 

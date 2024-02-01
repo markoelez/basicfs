@@ -44,36 +44,36 @@ PORT=9092 DB=/tmp/db REPLICAS=2 ./scripts/master localhost:9090,localhost:9091
 To write a file, send a HTTP PUT request containing the filedata to the master server.
 
 ```
-curl -X PUT -d filedata localhost:9092/fileID
+curl -X PUT -d filedata localhost:9092/file_id
 ```
 
 ### Read File
 
-To read a file, send a HTTP GET request to the `fileID`.
+To read a file, send a HTTP GET request to the `file_id`.
 
 ```
-curl localhost:9092/fileID
+curl localhost:9092/file_id
 ```
 
 You can use also use this URL to read directly from the volume server:
 
 ```
-http://localhost:9090/fileID
+http://localhost:9090/file_id
 ```
 
 ### Delete File
 
-To delete a file, send a HTTP DELETE request to the `fileID`.
+To delete a file, send a HTTP DELETE request to the `file_id`.
 
 ```
-curl -X DELETE localhost:9092/fileID
+curl -X DELETE localhost:9092/file_id
 ```
 
 ## Architecture
 
 BasicFS is designed to handle small files efficiently.
 
-Currently fileID's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the fileID and volumeID mapping should be cached in a local database after the initial write and used in subsequent GET requests. Uploaded key/value pairs will be replicated accross the specified volume servers based on the user specified replication protocol.
+Currently file_id's are mapped to volume servers with the master. Eventually, this should be changed so that the master is only aware of volumeIDs which are mapped to their respective urls. Since objects will be written once and read often, the file_id and volumeID mapping should be cached in a local database after the initial write and used in subsequent GET requests. Uploaded key/value pairs will be replicated accross the specified volume servers based on the user specified replication protocol.
 
 ## Todo
 - Consistent hashing instead of random volume selection
